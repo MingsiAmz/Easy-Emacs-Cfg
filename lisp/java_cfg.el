@@ -8,7 +8,7 @@
   :mode ("\\.java\\'" . java-mode)
   :hook (java-mode . lsp-deferred)
   :config
-  (setq lsp-java-workspace-dir "~/.emacs.d/workspace/"))
+  (setq lsp-java-workspace-dir "~/.emacs.d/java-workspace/"))
 
 (defun java-project-root ()
   (let ((dir (locate-dominating-file default-directory "pom.xml")))
@@ -30,6 +30,14 @@
         (unless (file-exists-p build-dir) (make-directory build-dir t))
         (compile (format "javac -d %s %s && java -cp %s %s"
                          build-dir file build-dir class-name))))))
+
+;; gradle 配置
+(use-package gradle-mode
+  :ensure t
+  :hook (java-mode . gradle-mode)
+  :config
+  (setq gradle-executable "gradlew.bat")
+  (setq gradle-switch-to-compilation-buffer t))
 
 ;; java运行函数配置
 (defun javarun ()

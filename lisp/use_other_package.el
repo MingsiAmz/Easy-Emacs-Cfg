@@ -34,4 +34,9 @@
   (setq flycheck-check-syntax-automatically '(save mode-enabled)
         flycheck-idle-change-delay 0.5))
 
+(use-package dumb-jump
+  :ensure t
+  :bind (("C-c j" . dumb-jump-go)
+         ("C-c n" . dumb-jump-back)))
+
 (provide 'use_other_package)
