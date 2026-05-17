@@ -4,7 +4,13 @@
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode t)
 (setq inhibit-startup-screen t)
+(setq ring-bell-function 'ignore)
 (set-face-attribute 'default nil :font "Fira Code" :height 160)
+
+;; 平滑滚动
+(setq scroll-margin 2
+      scroll-conservatively 101
+      scroll-step 1)
 
 ;; 包管理（清华镜像）
 (setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
@@ -34,10 +40,13 @@
   :config
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.1
-        company-tooltip-align-annotations t))
+        company-tooltip-align-annotations t
+        company-backends '((company-capf    
+                           company-dabbrev-code
+                           company-keywords))))
 
-(use-package flycheck
-  :hook (prog-mode . flycheck-mode))
+;; (use-package flycheck
+;;   :hook (prog-mode . flycheck-mode))
 
 (use-package orderless
   :config
@@ -45,10 +54,16 @@
         completion-category-defaults nil
         completion-category-overrides '((file (styles basic partial-completion)))))
 
-;; multiple
+;; key bording
 (global-set-key (kbd "C-c m") 'mc/mark-all-dwim)
 (global-set-key (kbd "C-c o") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c i") 'mc/edit-lines)
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "M-3") 'split-window-right)
+(global-set-key (kbd "C-=") 'text-scale-adjust)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 
 ;; 主题 & Dired
 (use-package doom-themes

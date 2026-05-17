@@ -1,17 +1,18 @@
 ;; lsp mode
+(with-eval-after-load 'lsp-mode
+  (setenv "CPATH" "C:/Custom/Lib/msys2/mingw64/include;C:/Custom/Lib/msys2/usr/include")
+  (setenv "C_INCLUDE_PATH" "C:/Custom/Lib/msys2/mingw64/include")
+  (setenv "CPLUS_INCLUDE_PATH" "C:/Custom/Lib/msys2/mingw64/include/c++/16.1.0"))
+
 (use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l"
-		lsp-file-watch-threshold 500)
-  :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  :commands (lsp lsp-deferred)
+  :ensure t
+  :hook ((c-mode c++-mode java-mode) . lsp-deferred)
   :config
-  (setq lsp-completion-provider :none)
-  (setq lsp-headerline-breadcrumb-enable -t)
-  :bind
-  ("C-c l s" . lsp-ivy-workspace-symbol)
-)
+  (setq lsp-completion-provider :capf
+        lsp-diagnostics-provider :none
+        lsp-enable-symbol-highlighting nil
+        lsp-enable-on-type-formatting nil
+        lsp-idle-delay 0.5))
 
 (use-package emmet-mode
   :hook (web-mode . emmet-mode))
