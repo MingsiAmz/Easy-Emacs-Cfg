@@ -65,6 +65,8 @@
 (global-set-key (kbd "C-=") 'text-scale-adjust)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 
+(global-set-key (kbd "<f5>") 'compile)
+
 ;; 主题 & Dired
 (use-package doom-themes
   :demand
