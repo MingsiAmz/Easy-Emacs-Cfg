@@ -6,6 +6,7 @@
 (setq inhibit-startup-screen t)
 (setq ring-bell-function 'ignore)
 (set-face-attribute 'default nil :font "Fira Code" :height 160)
+(setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8"))
 
 ;; 平滑滚动
 (setq scroll-margin 2
@@ -36,35 +37,34 @@
 
 ;; prog
 (use-package company
+  :ensure t
   :hook (after-init . global-company-mode)
   :config
-  (setq company-minimum-prefix-length 1
-        company-idle-delay 0.1
-        company-tooltip-align-annotations t
-        company-backends '((company-capf    
-                           company-dabbrev-code
-                           company-keywords))))
-
-;; (use-package flycheck
-;;   :hook (prog-mode . flycheck-mode))
+  (setq company-tooltip-limit 4)            
+  (setq company-tooltip-max-width 50)       
+  (setq company-tooltip-flip-when-above t)) 
 
 (use-package orderless
   :config
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles basic partial-completion)))))
+  (setq completion-styles '(orderless basic)))
+
+(use-package drag-stuff
+  :ensure t
+  :bind (("M-p" . drag-stuff-up)
+         ("M-n" . drag-stuff-down)))
+
+(require 'multiple-cursors)
 
 ;; key bording
-(global-set-key (kbd "C-c m") 'mc/mark-all-dwim)
-(global-set-key (kbd "C-c o") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c i") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
 (global-set-key (kbd "M-3") 'split-window-right)
 (global-set-key (kbd "C-=") 'text-scale-adjust)
 (global-set-key (kbd "C--") 'text-scale-decrease)
-
 (global-set-key (kbd "<f5>") 'compile)
 
 ;; 主题 & Dired
@@ -75,5 +75,28 @@
 (setq find-file-run-dired t
       dired-recursive-deletes 'always
       dired-auto-revert-buffer t)
+
+;; def
+(defun jump-project-dir ()
+  (interactive)
+  (dired "C:/Users/MingsiAmz/Documents/Code/"))
+
+(global-set-key (kbd "C-x x j") 'jump-project-dir)
+
+(defun back-to-buffer ()
+  (interactive)
+  (switch-to-buffer nil))
+
+(global-set-key (kbd "C-c b") 'back-to-buffer)
+
+(defun org-quick-preview ()
+  (interactive)
+  (org-html-export-to-html)
+  (browse-url (concat (file-name-sans-extension buffer-file-name) ".html")))
+
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
+
+
 
 (provide 'base)
