@@ -1,12 +1,16 @@
 ;; lsp mode
-(with-eval-after-load 'lsp-mode
-  (setenv "CPATH" "C:/Custom/Lib/msys2/mingw64/include;C:/Custom/Lib/msys2/usr/include")
-  (setenv "C_INCLUDE_PATH" "C:/Custom/Lib/msys2/mingw64/include")
-  (setenv "CPLUS_INCLUDE_PATH" "C:/Custom/Lib/msys2/mingw64/include/c++/16.1.0"))
+(setenv "PATH" (shell-command-to-string "echo %PATH%"))
+(setq python-shell-interpreter "C:/Custom/Lib/Python/python-3.14/bin/python.exe")
+
+;; (setq lib-path "C:/Custom/Lib/")
+;; (add-to-list 'exec-path (format "%sPython/python-3.14/bin" lib-path))
+;; (add-to-list 'exec-path (format "%smsys2/mingw64/bin" lib-path))
+;; (add-to-list 'exec-path (format "%smsys2/usr/bin" lib-path))
+;; (add-to-list 'exec-path (format "%sJava/jdk-21/bin" lib-path))
 
 (use-package lsp-mode
   :ensure t
-  :hook ((c-mode c++-mode java-mode) . lsp-deferred)
+  :hook ((c-mode c++-mode java-mode python-mode) . lsp-deferred)
   :config
   (setq lsp-completion-provider :capf
         lsp-diagnostics-provider :none

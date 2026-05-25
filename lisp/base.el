@@ -7,6 +7,8 @@
 (setq ring-bell-function 'ignore)
 (set-face-attribute 'default nil :font "Fira Code" :height 160)
 (setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8"))
+(setq dired-auto-revert-buffer t)
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;; 平滑滚动
 (setq scroll-margin 2
@@ -36,13 +38,17 @@
       delete-by-moving-to-trash t)
 
 ;; prog
+(electric-indent-mode -1)
+
 (use-package company
   :ensure t
   :hook (after-init . global-company-mode)
   :config
-  (setq company-tooltip-limit 4)            
-  (setq company-tooltip-max-width 50)       
-  (setq company-tooltip-flip-when-above t)) 
+  (setq company-tooltip-limit 4            
+        company-tooltip-max-width 50       
+        company-tooltip-flip-when-above t
+	company-idle-delay 0
+	company-minimum-prefix-length 1))
 
 (use-package orderless
   :config
@@ -66,6 +72,8 @@
 (global-set-key (kbd "C-=") 'text-scale-adjust)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<f5>") 'compile)
+(global-set-key (kbd "C-s") 'occur)
+(global-set-key (kbd "C-M-s") 'grep)
 
 ;; 主题 & Dired
 (use-package doom-themes
