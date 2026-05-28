@@ -6,9 +6,18 @@
 (setq inhibit-startup-screen t)
 (setq ring-bell-function 'ignore)
 (set-face-attribute 'default nil :font "Fira Code" :height 160)
-(setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8"))
 (setq dired-auto-revert-buffer t)
 (fset 'yes-or-no-p 'y-or-n-p)
+
+;; 首选编码为utf8
+(setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8"))
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-language-environment "UTF-8")
+
+;; 保存文件使用utf8
+(setq buffer-file-coding-system 'utf-8)
+(setq save-buffer-coding-system 'utf-8)
 
 ;; 平滑滚动
 (setq scroll-margin 2
@@ -74,6 +83,7 @@
 (global-set-key (kbd "<f5>") 'compile)
 (global-set-key (kbd "C-s") 'occur)
 (global-set-key (kbd "C-M-s") 'grep)
+(global-set-key (kbd "M-g") 'goto-line)
 
 ;; 主题 & Dired
 (use-package doom-themes

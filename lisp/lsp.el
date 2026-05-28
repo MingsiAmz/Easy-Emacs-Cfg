@@ -18,6 +18,16 @@
         lsp-enable-on-type-formatting nil
         lsp-idle-delay 0.5))
 
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  (dap-tooltip-mode 1)
+  (require 'dap-gdb-lldb)
+  (setq dap-auto-configure-mode t))
+
 (use-package emmet-mode
   :hook (web-mode . emmet-mode))
 
