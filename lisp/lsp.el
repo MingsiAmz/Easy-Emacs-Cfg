@@ -1,25 +1,25 @@
-;; lsp mode
+;; 环境变量
 (setenv "PATH" (shell-command-to-string "echo %PATH%"))
 (setq python-shell-interpreter "C:/Custom/Lib/Python/python-3.14/bin/python.exe")
 
-;; (setq lib-path "C:/Custom/Lib/")
-;; (add-to-list 'exec-path (format "%sPython/python-3.14/bin" lib-path))
-;; (add-to-list 'exec-path (format "%smsys2/mingw64/bin" lib-path))
-;; (add-to-list 'exec-path (format "%smsys2/usr/bin" lib-path))
-;; (add-to-list 'exec-path (format "%sJava/jdk-21/bin" lib-path))
-
+;; LSP Mode
 (use-package lsp-mode
   :ensure t
-  :hook ((c-mode c++-mode java-mode python-mode) . lsp-deferred)
+  :defer t 
+  :hook ((c-mode c++-mode csharp-mode java-mode python-mode) . lsp-deferred)
   :config
   (setq lsp-completion-provider :capf
         lsp-diagnostics-provider :none
         lsp-enable-symbol-highlighting nil
         lsp-enable-on-type-formatting nil
-        lsp-idle-delay 0.5))
+        lsp-enable-snippet nil
+        lsp-idle-delay 0.124
+        lsp-response-timeout 5))
 
+;; DAP Mode
 (use-package dap-mode
   :ensure t
+  :defer t
   :after lsp-mode
   :config
   (dap-mode 1)
@@ -28,13 +28,9 @@
   (require 'dap-gdb-lldb)
   (setq dap-auto-configure-mode t))
 
+;; Emmet
 (use-package emmet-mode
+  :defer t
   :hook (web-mode . emmet-mode))
-
-(let* ((msys2-base "C:/Custom/Lib/msys2")
-       (mingw64-bin (concat msys2-base "/mingw64/bin"))
-       (msys2-usr-bin (concat msys2-base "/usr/bin")))
-  (setenv "PATH" (concat mingw64-bin ";" msys2-usr-bin ";" (getenv "PATH")))
-)
 
 (provide 'lsp)
