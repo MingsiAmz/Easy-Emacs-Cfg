@@ -1,3 +1,7 @@
+;; 环境变量
+(setenv "PATH" (shell-command-to-string "echo %PATH%"))
+(setq python-shell-interpreter "C:/Custom/Lib/Python/python-3.14/bin/python.exe")
+
 ;; 界面 & 基础行为
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -9,6 +13,11 @@
 (set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
+
+;; 平滑滚动
+(setq scroll-margin 2
+      scroll-conservatively 101
+      scroll-step 1)
 (setq pixel-scroll-precision-mode t)
 (setq mouse-wheel-scroll-amount '(1))
 (setq mouse-wheel-progressive-speed nil)
@@ -22,11 +31,6 @@
       save-buffer-coding-system 'utf-8)
 (global-auto-revert-mode 1)
 (setq revert-without-query '(".*"))
-
-;; 平滑滚动
-(setq scroll-margin 2
-      scroll-conservatively 101
-      scroll-step 1)
 
 ;; 包管理
 (setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
@@ -59,6 +63,11 @@
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode 1))
 
 ;; Company
 (use-package company
@@ -97,9 +106,9 @@
 (global-set-key (kbd "C-=") 'text-scale-adjust)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<f5>") 'compile)
-(global-set-key (kbd "C-s") 'occur)
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-s") 'swiper)
 
 ;; 主题
 (use-package doom-themes
@@ -115,19 +124,22 @@
 (defun jump-project-dir ()
   (interactive)
   (dired "C:/Users/MingsiAmz/Documents/Code/"))
+(global-set-key (kbd "C-x x j") 'jump-project-dir)
 
 (defun back-to-buffer ()
   (interactive)
   (switch-to-buffer nil))
+(global-set-key (kbd "C-c b") 'back-to-buffer)
+
+(defun search-all-str (item ffix)
+  (interactive "ssearch for: \nsFile extension:")
+  (grep (format "findstr /ns \"%s\" *.%s" item ffix)))
+(global-set-key (kbd "C-`") 'search-all-str)
 
 (defun org-quick-preview ()
   (interactive)
   (org-html-export-to-html)
   (browse-url (concat (file-name-sans-extension buffer-file-name) ".html")))
-
-;; 快捷键绑定
-(global-set-key (kbd "C-x x j") 'jump-project-dir)
-(global-set-key (kbd "C-c b") 'back-to-buffer)
 
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))

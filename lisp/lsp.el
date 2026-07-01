@@ -1,7 +1,3 @@
-;; 环境变量
-(setenv "PATH" (shell-command-to-string "echo %PATH%"))
-(setq python-shell-interpreter "C:/Custom/Lib/Python/python-3.14/bin/python.exe")
-
 ;; LSP Mode
 (use-package lsp-mode
   :ensure t
