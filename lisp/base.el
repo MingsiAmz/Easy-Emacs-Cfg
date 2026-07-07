@@ -74,12 +74,12 @@
   :ensure t
   :hook (after-init . global-company-mode)
   :config
-  (setq company-tooltip-limit 4
+  (setq company-tooltip-limit 10
         company-tooltip-max-width 50
         company-tooltip-flip-when-above t
-        company-idle-delay 0
+        company-idle-delay 0.2
         company-minimum-prefix-length 1
-	company-backends '((company-capf :with company-dabbrev-code company-keywords))))
+        company-backends '(company-capf)))
 
 (use-package orderless
   :config

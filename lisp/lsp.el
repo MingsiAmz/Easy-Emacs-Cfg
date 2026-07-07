@@ -1,9 +1,7 @@
-(setenv "CTAGS" "C:/Custom/Lib/msys2/ucrt64/bin/ctags.exe")
-
 ;; LSP MODE
 (use-package lsp-mode
   :ensure t
-  :hook ((csharp-mode java-mode python-mode) . lsp-deferred)
+  :hook ((c-mode c++-mode java-mode python-mode) . lsp-deferred)
   :config
   (setq lsp-completion-provider :capf
         lsp-diagnostics-provider :none
@@ -24,24 +22,6 @@
   (dap-tooltip-mode 1)
   (require 'dap-gdb-lldb)
   (setq dap-auto-configure-mode t))
-
-;; FLYCHECK MODE
-(use-package flycheck
-  :ensure t
-  :hook ((csharp-mode java-mode python-mode) . flycheck-mode)
-  :config
-  (setq truncate-lines nil))
-
-;; CITRE MODE
-(use-package citre
-  :ensure t
-  :config
-  (require 'citre-config)
-  (setq citre-ctags-program (getenv "CTAGS"))
-  (setq citre-default-create-tags-function 'citre-ctags-create-tags))
-
-(add-hook 'c-mode-hook 'citre-mode)
-(add-hook 'c++-mode-hook 'citre-mode)
 
 ;; Emmet
 (use-package emmet-mode
