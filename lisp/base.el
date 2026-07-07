@@ -79,7 +79,7 @@
         company-tooltip-flip-when-above t
         company-idle-delay 0
         company-minimum-prefix-length 1
-        company-backends '((company-capf company-dabbrev-code company-keywords))))
+	company-backends '((company-capf :with company-dabbrev-code company-keywords))))
 
 (use-package orderless
   :config
