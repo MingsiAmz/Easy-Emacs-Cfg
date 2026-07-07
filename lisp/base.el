@@ -74,7 +74,7 @@
   :ensure t
   :hook (after-init . global-company-mode)
   :config
-  (setq company-tooltip-limit 10
+  (setq company-tooltip-limit 4
         company-tooltip-max-width 50
         company-tooltip-flip-when-above t
         company-idle-delay 0.2
