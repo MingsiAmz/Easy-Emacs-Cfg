@@ -130,7 +130,10 @@
 ;; 自定义函数
 (defun jump-project-dir ()
   (interactive)
-  (dired "C:/Users/MingsiAmz/Documents/Code/"))
+  (let ((code-dir (expand-file-name "~/Documents/Code/")))
+    (unless (file-exists-p code-dir)
+      (make-directory code-dir t))
+    (dired code-dir)))
 (global-set-key (kbd "C-x x j") 'jump-project-dir)
 
 (defun back-to-buffer ()
