@@ -91,8 +91,16 @@
          ("M-n" . drag-stuff-down)))
 
 ;; multiple-cursors
-(require 'multiple-cursors)
-(setq mc/always-run-for-all t)
+(use-package multiple-cursors
+  :ensure t
+  :config
+  (setq mc/always-run-for-all t))
+
+;; swiper
+(use-package swiper
+  :ensure t
+  :bind
+  (("C-s" . swiper)))
 
 ;; 快捷键
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -108,7 +116,6 @@
 (global-set-key (kbd "<f5>") 'compile)
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
-(global-set-key (kbd "C-s") 'swiper)
 
 ;; 主题
 (use-package doom-themes
