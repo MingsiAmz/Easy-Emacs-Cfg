@@ -1,6 +1,5 @@
 ;; 环境变量
 (setenv "PATH" (shell-command-to-string "echo %PATH%"))
-(setq python-shell-interpreter "C:/Custom/Lib/Python/python-3.14/bin/python.exe")
 
 ;; 界面 & 基础行为
 (menu-bar-mode -1)
