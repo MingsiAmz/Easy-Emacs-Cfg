@@ -12,6 +12,7 @@
 (set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
+(setq package-quickstart nil)
 
 ;; 平滑滚动
 (setq scroll-margin 2
@@ -76,7 +77,7 @@
   (setq company-tooltip-limit 4
         company-tooltip-max-width 50
         company-tooltip-flip-when-above t
-        company-idle-delay 0.2
+        company-idle-delay 0.1
         company-minimum-prefix-length 1
         company-backends '(company-capf)))
 
@@ -115,6 +116,7 @@
 (global-set-key (kbd "<f5>") 'compile)
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-c i") 'eglot-code-actions)
 
 ;; 主题
 (use-package doom-themes
@@ -152,5 +154,12 @@
 
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
+
+;; YASnippet
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode)
+  :config
+  (yas-global-mode 1)
+  (use-package yasnippet-snippets))
 
 (provide 'base)

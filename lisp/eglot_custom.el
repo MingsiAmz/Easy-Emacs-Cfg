@@ -16,6 +16,11 @@
                   :saveActions (:organizeImports t)
                   :references (:includeDecompiledSources t)))))
 
+(setq eglot-send-changes-idle-time 0.1)
+(setq flymake-no-changes-timeout 0.15)
+(setq eglot-events-buffer-size 0)
+
+;; dap mode
 (use-package dap-mode
   :ensure t
   :defer t
