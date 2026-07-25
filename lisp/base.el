@@ -1,5 +1,6 @@
 ;; 环境变量
-(setenv "PATH" (shell-command-to-string "echo %PATH%"))
+(when (eq system-type 'windows-nt)
+  (setenv "PATH" (string-trim-right (shell-command-to-string "echo %PATH%"))))
 
 ;; 界面 & 基础行为
 (menu-bar-mode -1)
@@ -12,15 +13,6 @@
 (set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
-(setq package-quickstart nil)
-
-;; 平滑滚动
-(setq scroll-margin 2
-      scroll-conservatively 101
-      scroll-step 1)
-(setq pixel-scroll-precision-mode t)
-(setq mouse-wheel-scroll-amount '(1))
-(setq mouse-wheel-progressive-speed nil)
 
 ;; 编码设置
 (prefer-coding-system 'utf-8)
@@ -29,8 +21,23 @@
 (setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8")
       buffer-file-coding-system 'utf-8
       save-buffer-coding-system 'utf-8)
-(global-auto-revert-mode 1)
-(setq revert-without-query '(".*"))
+(setq-default truncate-lines t
+              buffer-file-coding-system 'utf-8-unix)
+
+;; revert
+(setq auto-revert-remote-files nil
+      auto-revert-stop-on-user-input t
+      revert-without-query nil)
+(add-hook 'dired-mode-hook #'auto-revert-mode)
+(global-auto-revert-mode -1)
+
+;; 平滑滚动
+(setq scroll-margin 2
+      scroll-conservatively 101
+      scroll-step 1
+      pixel-scroll-precision-mode t
+      mouse-wheel-scroll-amount '(1)
+      mouse-wheel-progressive-speed nil)
 
 ;; 包管理
 (setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
@@ -38,10 +45,8 @@
                          ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
       package-check-signature nil
       package-enable-at-startup nil
-      package-quickstart t)
-
+      package-quickstart nil)
 (package-initialize)
-(unless package-archive-contents (package-refresh-contents))
 
 (use-package use-package
   :ensure t
@@ -58,49 +63,55 @@
 
 ;; 编程模式通用设置
 (electric-indent-mode -1)
+
+;; Projectile
 (use-package projectile
   :ensure t
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+;; Ivy
 (use-package ivy
   :ensure t
-  :config
-  (ivy-mode 1))
+  :config (ivy-mode 1))
 
 ;; Company
 (use-package company
   :ensure t
   :hook (after-init . global-company-mode)
   :config
-  (setq company-tooltip-limit 4
+  (setq company-idle-delay 0.3
+        company-minimum-prefix-length 1
+        company-tooltip-limit 8
         company-tooltip-max-width 50
         company-tooltip-flip-when-above t
-        company-idle-delay 0.1
-        company-minimum-prefix-length 1
-        company-backends '(company-capf)))
+        company-backends '((company-capf :with company-dabbrev))
+        company-dabbrev-other-buffers 'code
+        company-dabbrev-ignore-case t
+        company-dabbrev-minimum-prefix-length 3
+        completion-ignore-case t))
 
+;; Orderless
 (use-package orderless
-  :config
-  (setq completion-styles '(orderless basic)))
+  :ensure t
+  :config (setq completion-styles '(orderless basic)))
 
+;; Drag stuff
 (use-package drag-stuff
   :ensure t
   :bind (("M-p" . drag-stuff-up)
          ("M-n" . drag-stuff-down)))
 
-;; multiple-cursors
+;; Multiple cursors
 (use-package multiple-cursors
   :ensure t
-  :config
-  (setq mc/always-run-for-all t))
+  :config (setq mc/always-run-for-all t))
 
-;; swiper
+;; Swiper
 (use-package swiper
   :ensure t
-  :bind
-  (("C-s" . swiper)))
+  :bind (("C-s" . swiper)))
 
 ;; 快捷键
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -120,7 +131,7 @@
 
 ;; 主题
 (use-package doom-themes
-  :demand
+  :ensure t
   :config (load-theme 'doom-one t))
 
 ;; Dired
@@ -151,15 +162,18 @@
   (interactive)
   (org-html-export-to-html)
   (browse-url (concat (file-name-sans-extension buffer-file-name) ".html")))
-
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
 
 ;; YASnippet
 (use-package yasnippet
+  :ensure t
   :hook (prog-mode . yas-minor-mode)
   :config
-  (yas-global-mode 1)
-  (use-package yasnippet-snippets))
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
 
 (provide 'base)
