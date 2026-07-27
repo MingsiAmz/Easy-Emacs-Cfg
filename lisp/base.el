@@ -40,12 +40,14 @@
       mouse-wheel-progressive-speed nil)
 
 ;; 包管理
-(setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
-      package-check-signature nil
-      package-enable-at-startup nil
-      package-quickstart nil)
+;; (setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+;;                          ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+;;                          ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+;;       package-check-signature nil
+;;       package-enable-at-startup nil
+;;       package-quickstart nil)
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 (use-package use-package
@@ -164,6 +166,14 @@
   (browse-url (concat (file-name-sans-extension buffer-file-name) ".html")))
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
+
+;; Magit
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  :config
+  (setq magit-commit-arguments '("--encoding=UTF-8"))
+  (global-set-key (kbd "C-x v c") 'magit-commit))
 
 ;; YASnippet
 (use-package yasnippet

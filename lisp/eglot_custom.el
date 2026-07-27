@@ -7,11 +7,16 @@
         w32-pipe-buffer-size 65536
         w32-pipe-read-delay 0))
 
-(add-hook 'c-mode-hook      #'eglot-ensure)
-(add-hook 'c++-mode-hook    #'eglot-ensure)
-(add-hook 'python-mode-hook #'eglot-ensure)
-(add-hook 'java-mode-hook   #'eglot-ensure)
-(add-hook 'java-ts-mode-hook #'eglot-ensure)
+(use-package eglot
+  :ensure t
+  :config
+  (add-hook 'c-mode-hook      #'eglot-ensure)
+  (add-hook 'c++-mode-hook    #'eglot-ensure)
+  (add-hook 'python-mode-hook #'eglot-ensure)
+  (add-hook 'java-mode-hook   #'eglot-ensure)
+  (add-hook 'java-ts-mode-hook #'eglot-ensure)
+  (add-to-list 'eglot-server-programs
+	       `(java-mode . ("jdtls",(concat "-data" (expand-file-name "~/.cache/jdtls/workspace"))))))
 
 (setq eglot-autoshutdown t
       eglot-sync-connect nil
