@@ -32,8 +32,7 @@
 (setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8")
       buffer-file-coding-system 'utf-8
       save-buffer-coding-system 'utf-8)
-(setq-default truncate-lines t
-              buffer-file-coding-system 'utf-8-unix)
+(setq-default buffer-file-coding-system 'utf-8)
 
 ;; revert
 (setq auto-revert-remote-files nil
@@ -105,18 +104,30 @@
 ;; Company
 (use-package company
   :ensure t
-  :hook (after-init . global-company-mode)
+  :hook ((prog-mode        . company-mode)  
+         (java-mode       . company-mode)
+         (java-ts-mode    . company-mode)
+         (c-mode          . company-mode)
+         (c++-mode        . company-mode)
+         (python-mode     . company-mode)
+         (js-mode         . company-mode)
+         (typescript-mode . company-mode))
   :config
-  (setq company-idle-delay 0
-        company-minimum-prefix-length 1
+  (setq company-idle-delay 0                
+        company-minimum-prefix-length 1     
         company-tooltip-limit 8
         company-tooltip-max-width 50
         company-tooltip-flip-when-above t
+        company-require-match nil           
+        company-frontends '(company-pseudo-tooltip-frontend
+                            company-echo-metadata-frontend)
         company-backends '((company-capf :with company-dabbrev))
         company-dabbrev-other-buffers 'code
         company-dabbrev-ignore-case t
         company-dabbrev-minimum-prefix-length 3
-        completion-ignore-case t))
+        completion-ignore-case t)
+  (setq company-auto-complete nil)
+  (setq company-auto-complete-chars nil))
 
 ;; Orderless
 (use-package orderless
