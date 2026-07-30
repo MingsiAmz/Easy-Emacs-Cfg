@@ -7,12 +7,23 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode t)
+(global-auto-revert-mode 1)
+(set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (setq inhibit-startup-screen t
       ring-bell-function 'ignore
-      dired-auto-revert-buffer t)
-(set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
+      dired-auto-revert-buffer t
+      global-auto-revert-non-file-buffers t
+      auto-revert-interval 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
+
+;; 主题
+(use-package doom-themes
+  :ensure t
+  :config 
+  (load-theme 'doom-one t)
+  (set-face-attribute 'mode-line nil :height 100)
+  (set-face-attribute 'mode-line-inactive nil :height 100))
 
 ;; 编码设置
 (prefer-coding-system 'utf-8)
@@ -64,14 +75,27 @@
       delete-by-moving-to-trash t)
 
 ;; 编程模式通用设置
-(electric-indent-mode -1)
+;; (electric-indent-mode -1)
 
 ;; Projectile
 (use-package projectile
   :ensure t
+  :diminish projectile-mode
   :config
   (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (setq projectile-project-root-files
+        '("build.gradle"        
+          "settings.gradle"     
+          "pom.xml"            
+          ".git"               
+          ".project"           
+          "build.sbt"          
+          "project.clj"))
+  (setq projectile-enable-caching t)
+  (setq projectile-auto-discover t)
+  (when (executable-find "fd")
+       (setq projectile-generic-command "fd . -0 --type f --color=never")))
 
 ;; Ivy
 (use-package ivy
@@ -83,7 +107,7 @@
   :ensure t
   :hook (after-init . global-company-mode)
   :config
-  (setq company-idle-delay 0.3
+  (setq company-idle-delay 0
         company-minimum-prefix-length 1
         company-tooltip-limit 8
         company-tooltip-max-width 50
@@ -130,11 +154,6 @@
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-c i") 'eglot-code-actions)
-
-;; 主题
-(use-package doom-themes
-  :ensure t
-  :config (load-theme 'doom-one t))
 
 ;; Dired
 (setq find-file-run-dired t
@@ -185,5 +204,7 @@
 (use-package yasnippet-snippets
   :ensure t
   :after yasnippet)
+
+
 
 (provide 'base)

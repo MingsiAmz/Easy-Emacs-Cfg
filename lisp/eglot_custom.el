@@ -8,15 +8,13 @@
         w32-pipe-read-delay 0))
 
 (use-package eglot
-  :ensure t
+  ;; :ensure t
   :config
   (add-hook 'c-mode-hook      #'eglot-ensure)
   (add-hook 'c++-mode-hook    #'eglot-ensure)
   (add-hook 'python-mode-hook #'eglot-ensure)
   (add-hook 'java-mode-hook   #'eglot-ensure)
-  (add-hook 'java-ts-mode-hook #'eglot-ensure)
-  (add-to-list 'eglot-server-programs
-	       `(java-mode . ("jdtls",(concat "-data" (expand-file-name "~/.cache/jdtls/workspace"))))))
+  (add-hook 'java-ts-mode-hook #'eglot-ensure))
 
 (setq eglot-autoshutdown t
       eglot-sync-connect nil
@@ -25,6 +23,12 @@
       eglot-send-changes-idle-time 0.5
       flymake-no-changes-timeout 1.5
       eglot-events-buffer-size 0)
+
+(defun my-eglot-project-root (dir)
+  (or (projectile-project-root)
+      (project-root (project-current))))
+
+(setq eglot--project-fn #'my-eglot-project-root)
 
 ;; ---- DAP ----
 (use-package dap-mode
