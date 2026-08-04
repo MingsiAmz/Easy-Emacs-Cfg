@@ -11,8 +11,6 @@
 (set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (setq inhibit-startup-screen t
       ring-bell-function 'ignore
-      dired-auto-revert-buffer t
-      global-auto-revert-non-file-buffers t
       auto-revert-interval 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
@@ -32,7 +30,7 @@
 (setq compilation-environment '("LANG=zh_CN.UTF-8" "LC_ALL=zh_CN.UTF-8")
       buffer-file-coding-system 'utf-8
       save-buffer-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8)
+(setq-default buffer-file-coding-system 'utf-8-unix)
 
 ;; revert
 (setq auto-revert-remote-files nil
@@ -111,7 +109,8 @@
          (c++-mode        . company-mode)
          (python-mode     . company-mode)
          (js-mode         . company-mode)
-         (typescript-mode . company-mode))
+         (typescript-mode . company-mode)
+	 (html-mode . company-mode))
   :config
   (setq company-idle-delay 0                
         company-minimum-prefix-length 1     
@@ -154,7 +153,7 @@
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "C-M-o") 'other-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
 (global-set-key (kbd "M-3") 'split-window-right)

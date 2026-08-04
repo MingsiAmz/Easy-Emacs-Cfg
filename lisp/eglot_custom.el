@@ -10,11 +10,13 @@
 (use-package eglot
   ;; :ensure t
   :config
-  (add-hook 'c-mode-hook      #'eglot-ensure)
-  (add-hook 'c++-mode-hook    #'eglot-ensure)
-  (add-hook 'python-mode-hook #'eglot-ensure)
-  (add-hook 'java-mode-hook   #'eglot-ensure)
-  (add-hook 'java-ts-mode-hook #'eglot-ensure))
+  (add-hook 'c-mode-hook      'eglot-ensure)
+  (add-hook 'c++-mode-hook    'eglot-ensure)
+  (add-hook 'python-mode-hook 'eglot-ensure)
+  (add-hook 'java-mode-hook   'eglot-ensure)
+  (add-hook 'java-ts-mode-hook 'eglot-ensure)
+  (add-hook 'html-mode-hook 'eglot-ensure)
+  (add-hook 'js-mode-hook 'eglot-ensure))
 
 (setq eglot-autoshutdown t
       eglot-sync-connect nil
