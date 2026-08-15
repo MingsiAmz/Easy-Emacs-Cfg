@@ -27,7 +27,7 @@
   :defer t
   :hook ((c-mode . eglot-ensure)
          (c++-mode . eglot-ensure)
-         (python-mode . my-eglot-python-setup)
+         (python-mode . eglot-ensure)
          (java-mode . eglot-ensure)
          (html-mode . eglot-ensure))
   :config
