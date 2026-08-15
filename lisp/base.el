@@ -153,7 +153,10 @@
 
 ;; 前缀优先排序
 (defun company-sort-prefix-first (candidates)
-  (let* ((prefix (company-prefix-or-completion))
+  (let* ((prefix (or (and company-prefix
+                          (not (equal company-prefix ""))
+                          (substring-no-properties company-prefix))
+                     ""))
          (pl (downcase prefix))
          (rx (regexp-quote pl))
          (idx-list (cl-loop for i from 0 for c in candidates
