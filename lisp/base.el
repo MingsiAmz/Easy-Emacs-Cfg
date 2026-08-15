@@ -268,6 +268,16 @@
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
 
+;; 窗口分割
+(setq split-window-preferred-function
+      (lambda (&optional window)
+        (split-window (or window (selected-window)) nil 'below)))
+
+(with-eval-after-load 'magit
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*magit" display-buffer-below-selected
+                 (window-height . 0.35))))
+
 ;; 便携性支持
 (defun my/trim-path (path)
   (if (string-prefix-p user-emacs-directory path)
