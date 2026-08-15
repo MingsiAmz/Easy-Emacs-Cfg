@@ -137,8 +137,8 @@
   (setq company-idle-delay 0.08
         company-minimum-prefix-length 2
         company-tooltip-limit 12
-        company-backends '((company-capf :with company-dabbrev-code company-keywords))
-        company-dabbrev-min-length 4
+        company-backends '((company-capf company-dabbrev-code company-keywords))
+        company-dabbrev-min-length 2
         company-dabbrev-ignore-case t
         company-dabbrev-code-everywhere t
         company-preserve-chart t
