@@ -273,12 +273,15 @@
       (lambda (&optional window)
         (split-window (or window (selected-window)) nil 'below)))
 
+(defun my/display-buffer-smart (buffer alist)
+  (if (one-window-p (selected-frame))
+      (display-buffer-in-direction buffer (cons '(direction . below) alist))
+    (display-buffer-in-direction buffer (cons '(direction . right) alist))))
+
 (with-eval-after-load 'magit
   (add-to-list 'display-buffer-alist
-               '("\\`\\*magit" display-buffer-below-selected
-                 (window-height . 0.35))))
+               '("\\`\\*magit" my/display-buffer-smart)))
 
-;; 便携性支持
 (defun my/trim-path (path)
   (if (string-prefix-p user-emacs-directory path)
       path
