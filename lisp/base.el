@@ -137,7 +137,7 @@
   (setq company-idle-delay 0.08
         company-minimum-prefix-length 2
         company-tooltip-limit 12
-        company-backends '(company-capf)
+        company-backends '((company-capf :with company-dabbrev-code company-keywords))
         company-dabbrev-min-length 4
         company-dabbrev-ignore-case t
         company-dabbrev-code-everywhere t
@@ -161,13 +161,13 @@
     (mapcar #'car
             (sort idx-list
                   (lambda (x y)
-                    (let ((ta (company--match-tier pl rx (car x)))
-                          (tb (company--match-tier pl rx (car y))))
+                    (let ((ta (my-company-match-tier pl rx (car x)))
+                          (tb (my-company-match-tier pl rx (car y))))
                       (cond
                        ((/= ta tb) (> ta tb))
                        (t (< (cdr x) (cdr y))))))))))
 
-(defun company--match-tier (pl rx cand)
+(defun my-company-match-tier (pl rx cand)
   (let ((c (downcase cand)))
     (cond
      ((string-prefix-p pl c) 3)
