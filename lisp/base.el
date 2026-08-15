@@ -1,24 +1,31 @@
+;;; base.el -*- lexical-binding: t; -*-
+
 ;; 环境变量
 (when (eq system-type 'windows-nt)
   (setenv "PATH" (string-trim-right (shell-command-to-string "echo %PATH%"))))
+
+;; 垃圾回收性能优化（单线程 Emacs 卡顿治理）
+(defvar my-gc-small-threshold (* 32 1024 1024))
+(defun my-gc-set (threshold)
+  (setq gc-cons-threshold threshold
+        gc-cons-percentage 0.6))
+(my-gc-set (* 64 1024 1024))
 
 ;; 界面 & 基础行为
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode t)
-(global-auto-revert-mode 1)
-(set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (setq inhibit-startup-screen t
-      ring-bell-function 'ignore
-      auto-revert-interval 1)
+      ring-bell-function 'ignore)
+(set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
 
 ;; 主题
 (use-package doom-themes
   :ensure t
-  :config 
+  :config
   (load-theme 'doom-one t)
   (set-face-attribute 'mode-line nil :height 100)
   (set-face-attribute 'mode-line-inactive nil :height 100))
@@ -33,35 +40,33 @@
 (setq-default buffer-file-coding-system 'utf-8-unix)
 
 ;; revert
-(setq auto-revert-remote-files nil
+(global-auto-revert-mode 1)
+(setq auto-revert-interval 1
+      auto-revert-remote-files nil
       auto-revert-stop-on-user-input t
       revert-without-query nil)
 (add-hook 'dired-mode-hook #'auto-revert-mode)
-(global-auto-revert-mode -1)
 
 ;; 平滑滚动
 (setq scroll-margin 2
       scroll-conservatively 101
       scroll-step 1
-      pixel-scroll-precision-mode t
       mouse-wheel-scroll-amount '(1)
       mouse-wheel-progressive-speed nil)
+(pixel-scroll-precision-mode t)
 
 ;; 包管理
-;; (setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-;;                          ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-;;                          ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
-;;       package-check-signature nil
-;;       package-enable-at-startup nil
-;;       package-quickstart nil)
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
+(setq package-archives
+      '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+        ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+      package-check-signature nil
+      package-enable-at-startup nil)
 (package-initialize)
 
+;; use-package
 (use-package use-package
-  :ensure t
   :config
-  (setq use-package-always-ensure t
+  (setq use-package-always-ensure nil
         use-package-verbose nil
         use-package-expand-minimally t))
 
@@ -71,83 +76,151 @@
       create-lockfiles nil
       delete-by-moving-to-trash t)
 
-;; 编程模式通用设置
-;; (electric-indent-mode -1)
+;; 大文件 / 手动切缓冲时动态调整 GC 阈值
+(defun my-buffer-size-based-gc ()
+  (cond
+   ((> (buffer-size) (* 4 1024 1024))
+    (my-gc-set (max my-gc-small-threshold (* (buffer-size) 8))))
+   ((and (called-interactively-p 'interactive)
+         (> gc-cons-threshold (* 48 1024 1024)))
+    (my-gc-set my-gc-small-threshold))))
+(add-hook 'after-change-major-mode-hook #'my-buffer-size-based-gc)
+
+;; 主动空闲 GC：摊到按键间隙
+(run-with-idle-timer 20 t (lambda ()
+                            (when (< gc-cons-threshold (* 96 1024 1024))
+                              (garbage-collect))))
+
+;; 保存后恢复常规阈值
+(defun my-gc-restore () (my-gc-set my-gc-small-threshold))
+(add-hook 'after-save-hook #'my-gc-restore)
 
 ;; Projectile
 (use-package projectile
   :ensure t
+  :defer t
   :diminish projectile-mode
+  :bind-keymap ("C-c p" . projectile-command-map)
   :config
   (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-project-root-files
-        '("build.gradle"        
-          "settings.gradle"     
-          "pom.xml"            
-          ".git"               
-          ".project"           
-          "build.sbt"          
+        '("build.gradle"
+          "settings.gradle"
+          "pom.xml"
+          ".git"
+          ".project"
+          "build.sbt"
           "project.clj"))
   (setq projectile-enable-caching t)
   (setq projectile-auto-discover t)
   (when (executable-find "fd")
-       (setq projectile-generic-command "fd . -0 --type f --color=never")))
+    (setq projectile-generic-command "fd . -0 --type f --color=never")))
 
 ;; Ivy
 (use-package ivy
   :ensure t
+  :defer 0.5
   :config (ivy-mode 1))
-
-;; Company
-(use-package company
-  :ensure t
-  :hook ((prog-mode        . company-mode)  
-         (java-mode       . company-mode)
-         (java-ts-mode    . company-mode)
-         (c-mode          . company-mode)
-         (c++-mode        . company-mode)
-         (python-mode     . company-mode)
-         (js-mode         . company-mode)
-         (typescript-mode . company-mode)
-	 (html-mode . company-mode))
-  :config
-  (setq company-idle-delay 0                
-        company-minimum-prefix-length 1     
-        company-tooltip-limit 8
-        company-tooltip-max-width 50
-        company-tooltip-flip-when-above t
-        company-require-match nil           
-        company-frontends '(company-pseudo-tooltip-frontend
-                            company-echo-metadata-frontend)
-        company-backends '((company-capf :with company-dabbrev))
-        company-dabbrev-other-buffers 'code
-        company-dabbrev-ignore-case t
-        company-dabbrev-minimum-prefix-length 3
-        completion-ignore-case t)
-  (setq company-auto-complete nil)
-  (setq company-auto-complete-chars nil))
 
 ;; Orderless
 (use-package orderless
   :ensure t
+  :defer t
   :config (setq completion-styles '(orderless basic)))
+
+;; Company
+(use-package company
+  :ensure t
+  :defer t
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-idle-delay 0.08
+        company-minimum-prefix-length 2
+        company-tooltip-limit 12
+        company-backends '(company-capf)
+        company-dabbrev-min-length 4
+        company-dabbrev-ignore-case t
+        company-dabbrev-code-everywhere t
+        company-preserve-chart t
+        company-transformers '(company-sort-prefix-first)))
+
+(use-package company-prescient
+  :ensure t
+  :defer t
+  :after company
+  :config
+  (company-prescient-mode 1))
+
+;; 前缀优先排序
+(defun company-sort-prefix-first (candidates)
+  (let* ((prefix (company-prefix-or-completion))
+         (pl (downcase prefix))
+         (rx (regexp-quote pl))
+         (idx-list (cl-loop for i from 0 for c in candidates
+                            collect (cons c i))))
+    (mapcar #'car
+            (sort idx-list
+                  (lambda (x y)
+                    (let ((ta (company--match-tier pl rx (car x)))
+                          (tb (company--match-tier pl rx (car y))))
+                      (cond
+                       ((/= ta tb) (> ta tb))
+                       (t (< (cdr x) (cdr y))))))))))
+
+(defun company--match-tier (pl rx cand)
+  (let ((c (downcase cand)))
+    (cond
+     ((string-prefix-p pl c) 3)
+     ((string-match rx c)
+      (let ((beg (string-match rx c)))
+        (if (and (> beg 0)
+                 (member (aref c (1- beg)) '(?_ ?. ?- ?/ ? )))
+            2
+          1)))
+     (t 0))))
+
+(global-set-key (kbd "C-M-i") 'company-complete)
 
 ;; Drag stuff
 (use-package drag-stuff
   :ensure t
+  :defer t
   :bind (("M-p" . drag-stuff-up)
          ("M-n" . drag-stuff-down)))
 
 ;; Multiple cursors
 (use-package multiple-cursors
   :ensure t
+  :defer t
   :config (setq mc/always-run-for-all t))
 
 ;; Swiper
 (use-package swiper
   :ensure t
+  :defer t
   :bind (("C-s" . swiper)))
+
+;; Magit
+(use-package magit
+  :ensure t
+  :defer t
+  :bind ("C-x g" . magit-status)
+  :config
+  (setq magit-commit-arguments '("--encoding=UTF-8"))
+  (global-set-key (kbd "C-x v c") 'magit-commit))
+
+;; YASnippet
+(use-package yasnippet
+  :ensure t
+  :defer t
+  :hook (prog-mode . yas-minor-mode)
+  :config
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :ensure t
+  :defer t
+  :after yasnippet)
 
 ;; 快捷键
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -167,8 +240,7 @@
 
 ;; Dired
 (setq find-file-run-dired t
-      dired-recursive-deletes 'always
-      dired-auto-revert-buffer t)
+      dired-recursive-deletes 'always)
 
 ;; 自定义函数
 (defun jump-project-dir ()
@@ -196,25 +268,10 @@
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
 
-;; Magit
-(use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status)
-  :config
-  (setq magit-commit-arguments '("--encoding=UTF-8"))
-  (global-set-key (kbd "C-x v c") 'magit-commit))
-
-;; YASnippet
-(use-package yasnippet
-  :ensure t
-  :hook (prog-mode . yas-minor-mode)
-  :config
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets
-  :ensure t
-  :after yasnippet)
-
-
+;; 便携性支持
+(defun my/trim-path (path)
+  (if (string-prefix-p user-emacs-directory path)
+      path
+    (file-truename path)))
 
 (provide 'base)
