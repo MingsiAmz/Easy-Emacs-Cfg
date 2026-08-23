@@ -134,7 +134,7 @@
   :defer t
   :hook (prog-mode . company-mode)
   :config
-  (setq company-idle-delay 0.08
+  (setq company-idle-delay 0.0
         company-minimum-prefix-length 2
         company-tooltip-limit 12
         company-backends '((company-capf company-dabbrev-code company-keywords))
@@ -240,6 +240,7 @@
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-c i") 'eglot-code-actions)
+(global-set-key (kbd "C-c !") 'flymake-show-buffer-diagnostics)
 
 ;; Dired
 (setq find-file-run-dired t
