@@ -58,7 +58,8 @@
 ;; 包管理
 (setq package-archives
       '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-        ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+        ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+	("jcs-elpa" . "https://jcs-elpa.github.io/jcs-elpa/packages/"))
       package-check-signature nil
       package-enable-at-startup nil)
 (package-initialize)
@@ -103,14 +104,6 @@
   :bind-keymap ("C-c p" . projectile-command-map)
   :config
   (projectile-mode +1)
-  (setq projectile-project-root-files
-        '("build.gradle"
-          "settings.gradle"
-          "pom.xml"
-          ".git"
-          ".project"
-          "build.sbt"
-          "project.clj"))
   (setq projectile-enable-caching t)
   (setq projectile-auto-discover t)
   (when (executable-find "fd")
@@ -122,65 +115,72 @@
   :defer 0.5
   :config (ivy-mode 1))
 
+;; Company
+(use-package company
+  :ensure t
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-idle-delay 0.1
+        company-minimum-prefix-length 1
+        company-tooltip-limit 12
+        company-require-match nil
+        company-dabbrev-ignore-case t
+        company-dabbrev-downcase nil
+        company-dabbrev-code-everywhere t
+        company-tooltip-align-annotations t
+        company-backends '((company-capf
+                            :with company-dabbrev-code 
+                            company-keywords))
+        company-selection-wrap-around t))
+  
+(use-package prescient
+  :ensure t
+  :after company
+  :config
+  (setq prescient-filter-method '(literal prefix flex)
+        prescient-save-file (locate-user-emacs-file "prescient-save.el")
+        prescient-history-length 1000))
+
+(use-package company-prescient
+  :ensure t
+  :after (company prescient)
+  :config
+  (company-prescient-mode 1)
+  (prescient-persist-mode 1)
+  (setq company-prescient-sort-length-enable nil))
+
+(use-package flycheck
+  :ensure t
+  :hook
+  (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-idle-change-delay 0.5
+	flycheck-check-syntax-automatically '(save))
+  (setq flycheck-display-errors-function nil
+        flycheck-echo-mode nil))
+
+(use-package flycheck-posframe
+  :ensure t
+  :after flycheck
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+  (setq flycheck-posframe-warning-prefix "W"
+        flycheck-posframe-error-prefix "E"
+        flycheck-posframe-info-prefix "I"))
+
+;; eldoc
+(use-package eldoc
+  :hook (prog-mode . eldoc-mode)
+  :config
+  (setq eldoc-idle-delay 0.5
+        eldoc-echo-area-use-multiline-p nil
+        eldoc-echo-area-display-truncation-message nil))
+
 ;; Orderless
 (use-package orderless
   :ensure t
   :defer t
   :config (setq completion-styles '(orderless basic)))
-
-;; Company
-(use-package company
-  :ensure t
-  :defer t
-  :hook (prog-mode . company-mode)
-  :config
-  (setq company-idle-delay 0.0
-        company-minimum-prefix-length 2
-        company-tooltip-limit 12
-        company-backends '((company-capf company-dabbrev-code company-keywords))
-        company-dabbrev-min-length 2
-        company-dabbrev-ignore-case t
-        company-dabbrev-code-everywhere t
-        company-preserve-chart t
-        company-transformers '(company-sort-prefix-first)))
-
-(use-package company-prescient
-  :ensure t
-  :defer t
-  :after company
-  :config
-  (company-prescient-mode 1))
-
-;; 前缀优先排序
-(defun company-sort-prefix-first (candidates)
-  (let* ((prefix (or (and company-prefix
-                          (not (equal company-prefix ""))
-                          (substring-no-properties company-prefix))
-                     ""))
-         (pl (downcase prefix))
-         (rx (regexp-quote pl))
-         (idx-list (cl-loop for i from 0 for c in candidates
-                            collect (cons c i))))
-    (mapcar #'car
-            (sort idx-list
-                  (lambda (x y)
-                    (let ((ta (my-company-match-tier pl rx (car x)))
-                          (tb (my-company-match-tier pl rx (car y))))
-                      (cond
-                       ((/= ta tb) (> ta tb))
-                       (t (< (cdr x) (cdr y))))))))))
-
-(defun my-company-match-tier (pl rx cand)
-  (let ((c (downcase cand)))
-    (cond
-     ((string-prefix-p pl c) 3)
-     ((string-match rx c)
-      (let ((beg (string-match rx c)))
-        (if (and (> beg 0)
-                 (member (aref c (1- beg)) '(?_ ?. ?- ?/ ? )))
-            2
-          1)))
-     (t 0))))
 
 (global-set-key (kbd "C-M-i") 'company-complete)
 
@@ -240,7 +240,6 @@
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-c i") 'eglot-code-actions)
-(global-set-key (kbd "C-c !") 'flymake-show-buffer-diagnostics)
 
 ;; Dired
 (setq find-file-run-dired t
@@ -271,20 +270,6 @@
   (browse-url (concat (file-name-sans-extension buffer-file-name) ".html")))
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
-
-;; 窗口分割
-(setq split-window-preferred-function
-      (lambda (&optional window)
-        (split-window (or window (selected-window)) nil 'below)))
-
-(defun my/display-buffer-smart (buffer alist)
-  (if (one-window-p (selected-frame))
-      (display-buffer-in-direction buffer (cons '(direction . below) alist))
-    (display-buffer-in-direction buffer (cons '(direction . right) alist))))
-
-(with-eval-after-load 'magit
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*magit" my/display-buffer-smart)))
 
 (defun my/trim-path (path)
   (if (string-prefix-p user-emacs-directory path)

@@ -23,13 +23,8 @@
       (project-root (project-current))))
 
 (use-package eglot
-  :ensure t
   :defer t
-  :hook ((c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)
-         (python-mode . eglot-ensure)
-         (java-mode . eglot-ensure)
-         (html-mode . eglot-ensure))
+  :hook (prog-mode . eglot-ensure)
   :config
   (setq jsonrpc-default-request-timeout 20))
 (setq eglot--project-fn #'my-eglot-project-root)
