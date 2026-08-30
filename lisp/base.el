@@ -4,6 +4,8 @@
 (when (eq system-type 'windows-nt)
   (setenv "PATH" (string-trim-right (shell-command-to-string "echo %PATH%"))))
 
+(setq split-window-preferred-function 'split-window-below)
+
 ;; 垃圾回收性能优化（单线程 Emacs 卡顿治理）
 (defvar my-gc-small-threshold (* 32 1024 1024))
 (defun my-gc-set (threshold)
@@ -18,7 +20,7 @@
 (global-display-line-numbers-mode t)
 (setq inhibit-startup-screen t
       ring-bell-function 'ignore)
-(set-face-attribute 'default nil :font "等距更纱黑体 SC" :height 160)
+(set-face-attribute 'default nil :font "Sarasa Term SC" :height 160)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
 
@@ -239,20 +241,10 @@
 (global-set-key (kbd "<f5>") 'compile)
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
-(global-set-key (kbd "C-c i") 'eglot-code-actions)
 
 ;; Dired
 (setq find-file-run-dired t
       dired-recursive-deletes 'always)
-
-;; 自定义函数
-(defun jump-project-dir ()
-  (interactive)
-  (let ((code-dir (expand-file-name "~/Documents/Code/")))
-    (unless (file-exists-p code-dir)
-      (make-directory code-dir t))
-    (dired code-dir)))
-(global-set-key (kbd "C-x x j") 'jump-project-dir)
 
 (defun back-to-buffer ()
   (interactive)

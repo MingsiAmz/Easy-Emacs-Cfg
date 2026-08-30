@@ -27,9 +27,6 @@
 ;; ---- 允许重新定义交互命令，避免启动警告刷屏 ----
 (setq ad-redefinition-action 'accept)
 
-(require 'base)
-(require 'eglot_custom)
-
 (put 'upcase-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
 
@@ -50,3 +47,7 @@
  ;; If there is more than one, they won't work right.
  )
 (put 'dired-find-alternate-file 'disabled nil)
+
+(require 'base)
+(require 'eglot_custom)
+

@@ -13,18 +13,19 @@
       eglot-connect-timeout 60
       eglot-send-changes-idle-time 0.5
       flymake-no-changes-timeout 1.5
-      eglot-events-buffer-size 0)   
+      eglot-events-buffer-size 0)
 
-(global-set-key (kbd "C-c i") 'eglot-code-actions)
-
-;; 项目根目录解析
+;; 项目根目录解析PPP
 (defun my-eglot-project-root (dir)
   (or (projectile-project-root)
       (project-root (project-current))))
 
 (use-package eglot
   :defer t
-  :hook (prog-mode . eglot-ensure)
+  :hook
+  ((c++-mode-hook c-mode-hook java-mode-hook python-mode-hook) . eglot-ensure)
+  :bind
+  ("C-c i" . eglot-code-actions)
   :config
   (setq jsonrpc-default-request-timeout 20))
 (setq eglot--project-fn #'my-eglot-project-root)
