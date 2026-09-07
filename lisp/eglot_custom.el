@@ -1,64 +1,52 @@
 ;;; eglot_custom.el -*- lexical-binding: t; -*-
 
-;; Windows 管道优化
+;; Windows 优化
 (when (eq system-type 'windows-nt)
   (setq process-connection-type nil
-        w32-pipe-buffer-size 65536
-        w32-pipe-read-delay 0))
+        w32-pipe-buffer-size 65536))
 
-;; eglot 全局策略
-(setq eglot-autoshutdown t          
-      eglot-sync-connect nil        
-      eglot-report-progress nil     
+;; 项目根目录
+(defun my-eglot-project-root (_dir)
+  (or (and (fboundp 'projectile-project-root) (projectile-project-root))
+      (and (fboundp 'project-current) (project-current)
+           (ignore-errors (project-root (project-current))))))
+
+;; Eglot 基础设置
+(setq eglot-autoshutdown t
+      eglot-sync-connect nil
       eglot-connect-timeout 60
       eglot-send-changes-idle-time 0.5
-      flymake-no-changes-timeout 1.5
-      eglot-events-buffer-size 0)
-
-;; 项目根目录解析PPP
-(defun my-eglot-project-root (dir)
-  (or (projectile-project-root)
-      (project-root (project-current))))
+      eglot--project-fn #'my-eglot-project-root
+      jsonrpc-default-request-timeout 20)
 
 (use-package eglot
   :defer t
-  :hook
-  ((c++-mode-hook c-mode-hook java-mode-hook python-mode-hook) . eglot-ensure)
-  :bind
-  ("C-c i" . eglot-code-actions)
+  :hook (prog-mode . eglot-ensure)
+  :bind ("C-c i" . eglot-code-actions)
   :config
-  (setq jsonrpc-default-request-timeout 20))
-(setq eglot--project-fn #'my-eglot-project-root)
+  (setq eglot-stay-out-of '(flymake))
 
+;; Emmet
 (use-package emmet-mode
   :ensure t
-  :defer t
-  :hook ((html-mode css-mode web-mode) . emmet-mode)
-  :config
-  (setq emmet-indentation 2
-        emmet-move-cursor-between-quotes t))
+  :hook ((html-mode css-mode web-mode) . emmet-mode))
 
-;; JS 模式
+;; JS
 (use-package js2-mode
   :ensure t
-  :defer t
-  :mode ("\\.js\\'" . js2-mode)
-  :config
-  (setq js2-basic-offset tab-width
-        js2-show-parse-errors nil
-        js2-show-strict-warnings nil
-        js2-strict-missing-semi-warning nil))
+  :mode ("\\.js\\'" . js2-mode))
 
-;; DAP（调试，延迟加载）
+;; DAP
 (use-package dap-mode
   :ensure t
-  :defer t
-  :commands (dap-mode dap-ui-mode dap-tooltip-mode)
+  :commands (dap-mode dap-ui-mode)
   :config
   (dap-mode 1)
   (dap-ui-mode 1)
-  (dap-tooltip-mode 1)
-  (require 'dap-gdb-lldb)
-  (setq dap-auto-configure-mode t))
+  (require 'dap-gdb-lldb))
+
+;; Web
+(use-package web-mode
+  :mode ("\\.html?\\'" "\\.jsx?\\'" "\\.tsx?\\'"))
 
 (provide 'eglot_custom)

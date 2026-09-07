@@ -4,7 +4,8 @@
 (when (eq system-type 'windows-nt)
   (setenv "PATH" (string-trim-right (shell-command-to-string "echo %PATH%"))))
 
-(setq split-window-preferred-function 'split-window-below)
+(setq split-height-threshold nil)
+(setq split-width-threshold 9999)
 
 ;; 垃圾回收性能优化（单线程 Emacs 卡顿治理）
 (defvar my-gc-small-threshold (* 32 1024 1024))
@@ -23,6 +24,7 @@
 (set-face-attribute 'default nil :font "Sarasa Term SC" :height 160)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'window-setup-hook 'toggle-frame-maximized)
+(electric-pair-mode 1)
 
 ;; 主题
 (use-package doom-themes
@@ -122,7 +124,7 @@
   :ensure t
   :hook (prog-mode . company-mode)
   :config
-  (setq company-idle-delay 0.1
+  (setq company-idle-delay 0.0
         company-minimum-prefix-length 1
         company-tooltip-limit 12
         company-require-match nil
@@ -151,6 +153,7 @@
   (prescient-persist-mode 1)
   (setq company-prescient-sort-length-enable nil))
 
+;; flycheck
 (use-package flycheck
   :ensure t
   :hook
