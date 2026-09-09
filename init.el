@@ -40,7 +40,7 @@
    '(company-fuzzy company-prescient doom-themes drag-stuff eglot-java
 		   emmet-mode flx-rs flycheck flycheck-posframe
 		   js2-mode lsp-java magit multiple-cursors orderless
-		   projectile swiper yasnippet-snippets)))
+		   projectile swiper web-mode yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

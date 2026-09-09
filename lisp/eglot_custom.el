@@ -24,12 +24,12 @@
   :hook (prog-mode . eglot-ensure)
   :bind ("C-c i" . eglot-code-actions)
   :config
-  (setq eglot-stay-out-of '(flymake))
+  (setq eglot-stay-out-of '(flymake)))
 
 ;; Emmet
 (use-package emmet-mode
   :ensure t
-  :hook ((html-mode css-mode web-mode) . emmet-mode))
+  :hook ((html-mode css-mode) . emmet-mode))
 
 ;; JS
 (use-package js2-mode
@@ -44,9 +44,5 @@
   (dap-mode 1)
   (dap-ui-mode 1)
   (require 'dap-gdb-lldb))
-
-;; Web
-(use-package web-mode
-  :mode ("\\.html?\\'" "\\.jsx?\\'" "\\.tsx?\\'"))
 
 (provide 'eglot_custom)

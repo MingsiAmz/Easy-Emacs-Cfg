@@ -60,12 +60,9 @@
 (pixel-scroll-precision-mode t)
 
 ;; 包管理
-(setq package-archives
-      '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-        ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-	("jcs-elpa" . "https://jcs-elpa.github.io/jcs-elpa/packages/"))
-      package-check-signature nil
-      package-enable-at-startup nil)
+(setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 (package-initialize)
 
 ;; use-package
