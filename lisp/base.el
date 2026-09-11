@@ -1,14 +1,17 @@
 ;;; base.el -*- lexical-binding: t; -*-
 
 ;; 环境变量
+;; (when (eq system-type 'windows-nt)
+;;   (setenv "PATH" (string-trim-right (shell-command-to-string "echo %PATH%"))))
 (when (eq system-type 'windows-nt)
-  (setenv "PATH" (string-trim-right (shell-command-to-string "echo %PATH%"))))
+  (let ((p (getenv "PATH")))
+    (when p (setenv "PATH" p))))
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 9999)
 
 ;; 垃圾回收性能优化（单线程 Emacs 卡顿治理）
-(defvar my-gc-small-threshold (* 32 1024 1024))
+(defvar my-gc-small-threshold (* 64 1024 1024))
 (defun my-gc-set (threshold)
   (setq gc-cons-threshold threshold
         gc-cons-percentage 0.6))
@@ -63,14 +66,11 @@
 (setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
-(package-initialize)
 
 ;; use-package
-(use-package use-package
-  :config
-  (setq use-package-always-ensure nil
-        use-package-verbose nil
-        use-package-expand-minimally t))
+(setq use-package-always-ensure t
+      use-package-verbose nil
+      use-package-expand-minimally t)
 
 ;; 禁用备份文件
 (setq make-backup-files nil
@@ -90,7 +90,7 @@
 
 ;; 主动空闲 GC：摊到按键间隙
 (run-with-idle-timer 20 t (lambda ()
-                            (when (< gc-cons-threshold (* 96 1024 1024))
+                            (when (> gc-cons-threshold (* 96 1024 1024))
                               (garbage-collect))))
 
 ;; 保存后恢复常规阈值
@@ -121,7 +121,7 @@
   :ensure t
   :hook (prog-mode . company-mode)
   :config
-  (setq company-idle-delay 0.0
+  (setq company-idle-delay 0.1
         company-minimum-prefix-length 1
         company-tooltip-limit 12
         company-require-match nil
@@ -157,9 +157,7 @@
   (prog-mode . flycheck-mode)
   :config
   (setq flycheck-idle-change-delay 0.5
-	flycheck-check-syntax-automatically '(save))
-  (setq flycheck-display-errors-function nil
-        flycheck-echo-mode nil))
+	flycheck-check-syntax-automatically '(save)))
 
 (use-package flycheck-posframe
   :ensure t
@@ -262,10 +260,5 @@
   (browse-url (concat (file-name-sans-extension buffer-file-name) ".html")))
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-p") 'org-quick-preview))
-
-(defun my/trim-path (path)
-  (if (string-prefix-p user-emacs-directory path)
-      path
-    (file-truename path)))
 
 (provide 'base)
