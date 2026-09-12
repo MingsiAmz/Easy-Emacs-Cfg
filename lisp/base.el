@@ -100,7 +100,6 @@
 ;; Projectile
 (use-package projectile
   :ensure t
-  :defer t
   :diminish projectile-mode
   :bind-keymap ("C-c p" . projectile-command-map)
   :config
@@ -109,6 +108,12 @@
   (setq projectile-auto-discover t)
   (when (executable-find "fd")
     (setq projectile-generic-command "fd . -0 --type f --color=never")))
+
+(use-package helm-projectile
+  :ensure t
+  :after (projectile helm)
+  :config
+  (helm-projectile-on))
 
 ;; Ivy
 (use-package ivy
