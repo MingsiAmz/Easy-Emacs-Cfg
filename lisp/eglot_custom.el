@@ -12,29 +12,25 @@
            (ignore-errors (project-root (project-current))))))
 
 ;; Eglot 基础设置
-(setq eglot-autoshutdown t
-      eglot-sync-connect nil
-      eglot-connect-timeout 60
-      eglot-send-changes-idle-time 0.5
-      eglot--project-fn #'my-eglot-project-root
-      jsonrpc-default-request-timeout 20)
+(require 'eglot)
+;; (setq eglot-report-progress t)
+(add-hook 'java-mode-hook #'eglot-ensure)
+(add-hook 'python-mode-hook #'eglot-ensure)
+(add-hook 'csharp-mode-hook #'eglot-ensure)
+(add-hook 'c-mode-hook #'eglot-ensure)
+(add-hook 'c++-mode-hook #'eglot-ensure)
+(global-set-key (kbd "C-c i") 'eglot-code-actions)
 
-(use-package eglot
-  :defer t
-  :hook (prog-mode . eglot-ensure)
-  :bind ("C-c i" . eglot-code-actions)
-  :config
-  (setq eglot-stay-out-of '(flymake)))
+;; envrc
+(use-package envrc
+  :ensure t
+  :init
+  (envrc-global-mode))
 
 ;; Emmet
 (use-package emmet-mode
   :ensure t
   :hook ((html-mode css-mode) . emmet-mode))
-
-;; JS
-(use-package js2-mode
-  :ensure t
-  :mode ("\\.js\\'" . js2-mode))
 
 ;; DAP
 (use-package dap-mode

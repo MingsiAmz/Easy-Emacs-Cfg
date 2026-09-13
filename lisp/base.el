@@ -111,7 +111,7 @@
 
 (use-package helm-projectile
   :ensure t
-  :after (projectile helm)
+  :after projectile
   :config
   (helm-projectile-on))
 
@@ -156,24 +156,24 @@
   (setq company-prescient-sort-length-enable nil))
 
 ;; flycheck
-(use-package flycheck
-  :ensure t
-  :hook
-  (prog-mode . flycheck-mode)
-  :config
-  (setq flycheck-idle-change-delay 0.5
-	flycheck-check-syntax-automatically '(save)))
+;; (use-package flycheck
+;;   :ensure t
+;;   :hook
+;;   (prog-mode . flycheck-mode)
+;;   :config
+;;   (setq flycheck-idle-change-delay 0.5
+;; 	flycheck-check-syntax-automatically '(save)))
 
-(use-package flycheck-posframe
-  :ensure t
-  :after flycheck
-  :config
-  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-  (setq flycheck-posframe-warning-prefix "W"
-        flycheck-posframe-error-prefix "E"
-        flycheck-posframe-info-prefix "I"))
+;; (use-package flycheck-posframe
+;;   :ensure t
+;;   :after flycheck
+;;   :config
+;;   (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+;;   (setq flycheck-posframe-warning-prefix "W"
+;;         flycheck-posframe-error-prefix "E"
+;;         flycheck-posframe-info-prefix "I"))
 
-;; eldoc
+;; Eldoc
 (use-package eldoc
   :hook (prog-mode . eldoc-mode)
   :config
