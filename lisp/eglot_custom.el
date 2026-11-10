@@ -1,37 +1,41 @@
 ;;; eglot_custom.el -*- lexical-binding: t; -*-
-
-;; Windows 优化
 (when (eq system-type 'windows-nt)
   (setq process-connection-type nil
-        w32-pipe-buffer-size 65536))
+        w32-pipe-buffer-size 65536
+        read-process-output-max (* 1024 1024)))
 
-;; 项目根目录
-(defun my-eglot-project-root (_dir)
-  (or (and (fboundp 'projectile-project-root) (projectile-project-root))
-      (and (fboundp 'project-current) (project-current)
-           (ignore-errors (project-root (project-current))))))
-
-;; Eglot 基础设置
 (require 'eglot)
-(add-hook 'java-mode-hook #'eglot-ensure)
+(require 'eg_java)
+
+;; (add-hook 'java-mode-hook #'eglot-ensure)
 (add-hook 'python-mode-hook #'eglot-ensure)
 (add-hook 'csharp-mode-hook #'eglot-ensure)
 (add-hook 'c-mode-hook #'eglot-ensure)
 (add-hook 'c++-mode-hook #'eglot-ensure)
-(global-set-key (kbd "C-c i") 'eglot-code-actions)
-(global-set-key (kbd "C-c f") 'eglot-format)
-(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
 (with-eval-after-load 'eglot
+  (setq eglot-connect-timeout 300
+        jsonrpc-default-request-timeout 180
+        eglot-sync-connect nil
+        eglot-autoshutdown t
+        eglot-events-buffer-size 0
+        eglot-ignored-server-capabilities
+        '(:documentOnTypeFormattingProvider
+          :inlayHintProvider
+          :documentHighlightProvider
+          :semanticTokensProvider
+          ))
   (push '((c-mode c++-mode c-ts-mode c++-ts-mode) . ("clangd" "--limit-results=0"))
         eglot-server-programs)
-
   (setq-default eglot-workspace-configuration
-                '(:java          (:completion (:maxResults 0))
+                '(:java (:completion (:maxResults 50)
+                          :configuration (:updateBuildConfiguration "automatic"))
                   :gopls         (:completionBudget "0s")
                   :rust-analyzer (:workspace (:symbol (:search (:limit 0))))
                   :pylsp         (:plugins (:jedi_completion (:fuzzy t))))))
 
+(global-set-key (kbd "C-c i") #'eglot-code-actions)
+(global-set-key (kbd "C-c f") #'eglot-format)
 
 ;; Eldoc
 (use-package eldoc

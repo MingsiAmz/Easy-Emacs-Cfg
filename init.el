@@ -36,11 +36,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("5c7720c63b729140ed88cf35413f36c728ab7c70f8cd8422d9ee1cedeb618de5"
+     default))
  '(package-selected-packages
-   '(company-fuzzy company-prescient doom-themes drag-stuff eglot-java
-		   emmet-mode envrc flx-rs js2-mode lsp-java magit
-		   multiple-cursors orderless projectile swiper
-		   web-mode yasnippet-snippets)))
+   '(codeium company-prescient dape doom-themes drag-stuff eglot-java
+             eldoc-box emmet-mode envrc exec-path-from-shell
+             flycheck-eglot flycheck-posframe helm-projectile jarchive
+             js2-mode lsp-java magit minuet multiple-cursors orderless
+             swiper yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
