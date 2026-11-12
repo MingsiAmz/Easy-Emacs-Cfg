@@ -7,7 +7,6 @@
 (require 'eglot)
 (require 'eg_java)
 
-;; (add-hook 'java-mode-hook #'eglot-ensure)
 (add-hook 'python-mode-hook #'eglot-ensure)
 (add-hook 'csharp-mode-hook #'eglot-ensure)
 (add-hook 'c-mode-hook #'eglot-ensure)

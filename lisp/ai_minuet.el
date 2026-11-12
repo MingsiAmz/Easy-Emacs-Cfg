@@ -10,7 +10,7 @@
         minuet-auto-suggestion-debounce-delay 0.4
         minuet-openai-fim-compatible-options
         '(
-          :model "qwen3.5-2b"
+          :model "qwen2.5-coder-1.5b-instruct"
           :end-point "http://localhost:8520/v1/completions"
           :api-key "TERM"
           :name "Local-Qwen"
@@ -18,9 +18,10 @@
                              :suffix minuet--default-fim-suffix-function)
           :transform ()
           :get-text-fn minuet--openai-fim-get-text-fn
-          :optional (:max_tokens 96))))
+          :optional (:max_tokens 1024))))
   
-(global-set-key (kbd "C-c y") 'minuet-complete-with-minibuffer) 
+(global-set-key (kbd "C-c y") 'minuet-show-suggestion)
+(global-set-key (kbd "C-c Y") 'minuet-complete-with-minibuffer)
 
 (with-eval-after-load 'minuet
   (define-key minuet-active-mode-map (kbd "TAB") #'minuet-accept-suggestion-line)

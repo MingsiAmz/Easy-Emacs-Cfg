@@ -31,6 +31,7 @@
 (electric-pair-mode 1)
 (setq-default tab-width 8 indent-tabs-mode nil)
 (setq-default c-basic-offset 8)
+(setq confirm-kill-processes nil)
 
 ;; 主题
 (use-package doom-themes
@@ -280,6 +281,7 @@
 (global-set-key (kbd "<f5>") 'compile)
 (global-set-key (kbd "C-M-s") 'grep)
 (global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-M-y") 'flymake-show-buffer-diagnostics)
 
 ;; Dired
 (setq find-file-run-dired t

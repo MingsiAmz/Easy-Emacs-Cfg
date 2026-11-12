@@ -1,12 +1,15 @@
 ;;; eg_java.el --- Java (jdtls + eglot) -*- lexical-binding: t; -*-
 
 (defgroup my-java nil
+  "Java (jdtls + eglot) 开发环境配置"
   :group 'languages)
 
 (defcustom my-jdtls-dir "C:/Users/Administrator/Custom/Lib/Java/jdtls/"
+  "jdtls 安装目录（包含 plugins/org.eclipse.equinox.launcher_*.jar）"
   :type 'directory)
 
 (defcustom my-java-executable nil
+  "Java 可执行文件路径；为 nil 时使用 PATH 上的 `java'"
   :type '(choice (const :tag "PATH 上的 java" nil) file))
 
 (defun my-jdtls-launcher ()
